@@ -21,7 +21,7 @@ class ShoppingMemoDbHelper(context: Context) : SQLiteOpenHelper(context,DB_NAME,
     }
 
     private val SQL_CREATE_TABLE = """CREATE TABLE $TABLE_SHOPPING_LIST
-        ($COLUMN_ID LONG PRIMARY KEY AUTOINCREMENT,
+        ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
         $COLUMN_QUANTITY INTEGER NOT NULL,
         $COLUMN_PRODUCT TEXT NOT NULL);
     """
