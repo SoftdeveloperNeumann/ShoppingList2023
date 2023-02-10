@@ -37,10 +37,20 @@ class MainActivity : AppCompatActivity() {
         binding.lvShoppingMemos.adapter = adapter
     }
 
+    private fun showAllShoppingMemos(){
+        val list = dataSource.allShoppingMemos
+        val adapter = binding.lvShoppingMemos.adapter as ArrayAdapter<ShoppingMemo>
+        adapter.clear()
+        adapter.addAll(list)
+        adapter.notifyDataSetChanged()
+
+    }
+
     override fun onStart() {
         super.onStart()
         Log.d(TAG, "onStart: DataSource wird geöffnet")
         dataSource.open()
+        showAllShoppingMemos()
     }
 
     override fun onStop() {
