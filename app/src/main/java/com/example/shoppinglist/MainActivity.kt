@@ -21,6 +21,7 @@ class MainActivity : AppCompatActivity() {
         dataSource = ShoppingMemoDataSource(this)
 
         initShoppingMemoListView()
+        activateAddButton()
     }
 
     private fun initShoppingMemoListView() {
@@ -35,6 +36,30 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.lvShoppingMemos.adapter = adapter
+    }
+
+    private fun activateAddButton(){
+        binding.btnAddProduct.setOnClickListener {
+            val quantityString = binding.etQuantity.text.toString()
+            val product = binding.etProduct.text.toString()
+
+            if(binding.etQuantity.text.isNullOrBlank()){
+                binding.etQuantity.error = "Anzahl darf nicht leer sein"
+                return@setOnClickListener
+            }
+
+            if(binding.etProduct.text.isNullOrBlank()){
+                binding.etProduct.error = "Artikel darf nicht leer sein"
+                return@setOnClickListener
+            }
+
+            val quantity = quantityString.toInt()
+            binding.etQuantity.text.clear()
+            binding.etProduct.text.clear()
+            binding.etQuantity.requestFocus()
+            dataSource.createShoppingMemo(quantity,product)
+            showAllShoppingMemos()
+        }
     }
 
     private fun showAllShoppingMemos(){

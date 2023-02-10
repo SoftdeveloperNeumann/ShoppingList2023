@@ -1,5 +1,6 @@
 package com.example.shoppinglist
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -57,6 +58,22 @@ class ShoppingMemoDataSource(context: Context) {
         val product = cursor.getString(productIndex)
 
         return ShoppingMemo(quantity, product, id)
+    }
+
+    fun createShoppingMemo(quantity: Int, product: String):ShoppingMemo {
+
+        val values = ContentValues().apply {
+            put(ShoppingMemoDbHelper.COLUMN_QUANTITY,quantity)
+            put(ShoppingMemoDbHelper.COLUMN_PRODUCT,product)
+        }
+
+        val insertId = db?.insert(ShoppingMemoDbHelper.TABLE_SHOPPING_LIST,null,values) ?: -1
+        val cursor = db?.query(ShoppingMemoDbHelper.TABLE_SHOPPING_LIST,columns,
+            "${ShoppingMemoDbHelper.COLUMN_ID} = $insertId",null,null,null,null)
+        cursor?.moveToFirst()
+        val memo = cursorToShoppingMemo(cursor!!)
+        cursor.close()
+        return memo
     }
 
 
