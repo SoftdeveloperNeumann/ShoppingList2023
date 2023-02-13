@@ -4,18 +4,23 @@ import android.graphics.Color
 import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Log
 import android.view.*
 import android.widget.AbsListView.MultiChoiceModeListener
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.util.forEach
 import com.example.shoppinglist.databinding.ActivityMainBinding
+import com.example.shoppinglist.databinding.DialogEditShoppingmemoBinding
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var dialogBinding: DialogEditShoppingmemoBinding
+
     private val TAG = "MainActivity"
     private lateinit var dataSource: ShoppingMemoDataSource
 
@@ -23,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding= ActivityMainBinding.inflate(layoutInflater)
+        dialogBinding = DialogEditShoppingmemoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         dataSource = ShoppingMemoDataSource(this)
@@ -115,6 +121,19 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                     R.id.action_edit ->{
+                        touchedMemoPositions.forEach { key, value ->
+                            if(value){
+                                val memo = binding.lvShoppingMemos.getItemAtPosition(key) as ShoppingMemo
+                                val dialog = createShoppingMemoDialog(memo)
+
+                                val view = dialogBinding.root
+                                if(view.parent != null){
+                                    (view.parent as ViewGroup).removeView(view)
+                                }
+                                dialog.setView(view)
+                                dialog.show()
+                            }
+                        }
 
                     }
                 }
@@ -137,6 +156,30 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+    }
+
+    private fun createShoppingMemoDialog(memo: ShoppingMemo):AlertDialog{
+        val builder = AlertDialog.Builder(this)
+        dialogBinding.etChangeQuantity.setText(memo.quantity.toString())
+        dialogBinding.etChangeProduct.setText(memo.product)
+
+        builder.setTitle("Eintrag ändern")
+            .setPositiveButton("Ändern"){dialog,_ ->
+                val quantity = dialogBinding.etChangeQuantity.text.toString()
+                val product = dialogBinding.etChangeProduct.text.toString()
+                if(TextUtils.isEmpty(product) || TextUtils.isEmpty(quantity)){
+                    return@setPositiveButton
+                }
+                dataSource.updateShoppingMemo(quantity.toInt(),product,memo.id,memo.isSelected)
+                showAllShoppingMemos()
+                dialog.dismiss()
+
+            }
+            .setNegativeButton("Abbrechen"){dialog,_ ->
+                dialog.cancel()
+
+            }
+        return builder.create()
     }
 
     private fun showAllShoppingMemos(){
