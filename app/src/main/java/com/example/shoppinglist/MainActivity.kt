@@ -5,11 +5,12 @@ import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.AbsListView.MultiChoiceModeListener
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.TextView
+import androidx.core.util.forEach
 import com.example.shoppinglist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
 
         initShoppingMemoListView()
         activateAddButton()
+        initContextualActionBar()
     }
 
     private fun initShoppingMemoListView() {
@@ -84,6 +86,57 @@ class MainActivity : AppCompatActivity() {
             dataSource.createShoppingMemo(quantity,product)
             showAllShoppingMemos()
         }
+    }
+
+    private fun initContextualActionBar() {
+        binding.lvShoppingMemos.choiceMode = ListView.CHOICE_MODE_MULTIPLE_MODAL
+        binding.lvShoppingMemos.setMultiChoiceModeListener(object : MultiChoiceModeListener {
+            override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+               menuInflater.inflate(R.menu.menu_contextual,menu)
+                return true
+            }
+
+            override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+                val menuItem = menu?.findItem(R.id.action_edit)
+                menuItem?.isVisible = binding.lvShoppingMemos.checkedItemCount == 1
+               return true
+            }
+
+            override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
+                val touchedMemoPositions = binding.lvShoppingMemos.checkedItemPositions
+
+                when(item?.itemId){
+                    R.id.action_delete -> {
+                        touchedMemoPositions.forEach{key, value ->
+                            if(value){
+                                val memo = binding.lvShoppingMemos.getItemAtPosition(key) as ShoppingMemo
+                                dataSource.deleteShoppingMemo(memo)
+                            }
+                        }
+                    }
+                    R.id.action_edit ->{
+
+                    }
+                }
+                showAllShoppingMemos()
+                mode!!.finish()
+                return true
+            }
+
+            override fun onDestroyActionMode(mode: ActionMode?) {
+
+            }
+
+            override fun onItemCheckedStateChanged(
+                mode: ActionMode?,
+                position: Int,
+                id: Long,
+                checked: Boolean
+            ) {
+                mode?.invalidate()
+            }
+        })
+
     }
 
     private fun showAllShoppingMemos(){

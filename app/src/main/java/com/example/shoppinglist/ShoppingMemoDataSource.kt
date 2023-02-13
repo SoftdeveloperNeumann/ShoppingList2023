@@ -105,5 +105,9 @@ class ShoppingMemoDataSource(context: Context) {
         )
     }
 
+    fun deleteShoppingMemo(memo: ShoppingMemo) {
+        db!!.delete(ShoppingMemoDbHelper.TABLE_SHOPPING_LIST,"${ShoppingMemoDbHelper.COLUMN_ID} = ${memo.id}", null)
+    }
+
 
 }
