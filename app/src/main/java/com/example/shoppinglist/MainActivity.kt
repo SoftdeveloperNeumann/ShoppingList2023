@@ -1,9 +1,15 @@
 package com.example.shoppinglist
 
+import android.graphics.Color
+import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ListView
+import android.widget.TextView
 import com.example.shoppinglist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -33,9 +39,27 @@ class MainActivity : AppCompatActivity() {
             emptyListForInit
         ){
 
+            override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                val view = super.getView(position, convertView, parent) as TextView
+                val memo = binding.lvShoppingMemos.getItemAtPosition(position) as ShoppingMemo
+                if(memo.isSelected){
+                    view.paintFlags = view.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                    view.setTextColor(Color.rgb(175,175,175))
+                }else{
+                    view.paintFlags = view.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+                    view.setTextColor(Color.DKGRAY)
+                }
+
+                return  view
+            }
         }
 
         binding.lvShoppingMemos.adapter = adapter
+        binding.lvShoppingMemos.setOnItemClickListener { parent, view, position, id ->
+            val memo = parent.getItemAtPosition(position) as ShoppingMemo
+            dataSource.updateShoppingMemo(memo.quantity,memo.product,memo.id, !memo.isSelected)
+            showAllShoppingMemos()
+        }
     }
 
     private fun activateAddButton(){
