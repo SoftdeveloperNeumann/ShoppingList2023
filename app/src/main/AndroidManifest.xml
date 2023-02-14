@@ -20,6 +20,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:authorities="com.example.shoppinglist.ShoppingMemoContentProvider"
+            android:name=".ShoppingMemoContentProvider"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="true"/>
     </application>
 
 </manifest>

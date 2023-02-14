@@ -1,6 +1,7 @@
 package com.example.shoppinglist
 
 import android.content.ContentProvider
+import android.content.ContentUris
 import android.content.ContentValues
 import android.content.UriMatcher
 import android.database.Cursor
@@ -60,11 +61,16 @@ class ShoppingMemoContentProvider : ContentProvider() {
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        TODO("Not yet implemented")
+       val insertId = db.insert(ShoppingMemoDbHelper.TABLE_SHOPPING_LIST,null,values)
+        val _uri = ContentUris.withAppendedId(CONTENT_URI,insertId)
+        context!!.contentResolver.notifyChange(_uri,null)
+        return _uri
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("Not yet implemented")
+        val count = db.delete(ShoppingMemoDbHelper.TABLE_SHOPPING_LIST,selection,selectionArgs)
+        context!!.contentResolver.notifyChange(uri,null)
+        return count
     }
 
     override fun update(
@@ -73,6 +79,13 @@ class ShoppingMemoContentProvider : ContentProvider() {
         selection: String?,
         selectionArgs: Array<out String>?
     ): Int {
-        TODO("Not yet implemented")
+        val memoId = uri.lastPathSegment?.toLong()?: 0
+        val mySelection = "${ShoppingMemoDbHelper.COLUMN_ID} = $memoId"
+        val count = db.update(ShoppingMemoDbHelper.TABLE_SHOPPING_LIST,
+        values,
+        if(selection == null) mySelection else selection,
+        selectionArgs)
+        context!!.contentResolver.notifyChange(uri,null)
+        return count
     }
 }
