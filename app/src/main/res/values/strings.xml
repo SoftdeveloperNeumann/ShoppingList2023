@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ShoppingList</string>
+
+    <string name="description">Wollen sie erlauben die ShoppingList zu benutzen?</string>
 </resources>

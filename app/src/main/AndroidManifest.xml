@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <permission android:name="com.example.shoppinglist.permissions.USE_SHOPPINGLIST"
+        android:label="ShoppingListPermission"
+        android:description="@string/description"
+        android:protectionLevel="dangerous"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -26,7 +31,8 @@
             android:name=".ShoppingMemoContentProvider"
             android:enabled="true"
             android:exported="true"
-            android:multiprocess="true"/>
+            android:multiprocess="true"
+            android:permission="com.example.shoppinglist.permissions.USE_SHOPPINGLIST"/>
     </application>
 
 </manifest>
